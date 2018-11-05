@@ -23,7 +23,7 @@ export class CacheService {
    * in flight, if so return the subject. If not create a new
    * Subject inFlightObservable and return the source observable.
    */
-  get(key: string, fallback?: Observable<any>, maxAge?: number): Observable<any> | Subject<any> {
+  get<T>(key: string, fallback?: Observable<T>, maxAge?: number): Observable<T> | Subject<T> {
 
     if (this.hasValidCachedValue(key)) {
       console.log(`%cGetting from cache ${key}`, 'color: green');
@@ -57,7 +57,7 @@ export class CacheService {
    * Sets the value with key in the cache
    * Notifies all observers of the new value
    */
-  set(key: string, value: any, maxAge: number = this.DEFAULT_MAX_AGE): void {
+  set<T>(key: string, value: T, maxAge: number = this.DEFAULT_MAX_AGE): void {
     this.cache.set(key, { value: value, expiry: Date.now() + maxAge });
     this.notifyInFlightObservers(key, value);
   }
@@ -73,7 +73,7 @@ export class CacheService {
    * Publishes the value to all observers of the given
    * in progress observables if observers exist.
    */
-  private notifyInFlightObservers(key: string, value: any): void {
+  private notifyInFlightObservers<T>(key: string, value: T): void {
     if (this.inFlightObservables.has(key)) {
       const inFlight = this.inFlightObservables.get(key);
       const observersCount = inFlight.observers.length;
